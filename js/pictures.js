@@ -1,16 +1,17 @@
 const pictures = document.querySelector('.pictures');
 const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-const renderPhoto = ({url, description, likes, comments}) => {
+const renderPhoto = (picture) => {
   const pictureElement = pictureTemplate.cloneNode(true);
 
-  pictureElement.querySelector('.picture__img').src = url;
-  pictureElement.querySelector('.picture__img').alt = description;
+  pictureElement.querySelector('.picture__img').src = picture.url;
+  pictureElement.querySelector('.picture__img').alt = picture.description;
 
-  pictureElement.querySelector('.picture__likes').textContent = likes;
-  pictureElement.querySelector('.picture__comments').textContent = comments.length;
+  pictureElement.querySelector('.picture__likes').textContent = picture.likes;
+  pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
 
-  return pictureElement;
+  pictureElement.dataset.id = picture.id;
+  pictures.append(pictureElement);
 };
 
 const renderPhotos = (photos) => {
