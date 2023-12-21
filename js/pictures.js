@@ -1,28 +1,36 @@
-const pictures = document.querySelector('.pictures');
-const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
+import {showBigPicture} from './big-picture.js';
 
-const renderPhoto = (picture) => {
-  const pictureElement = pictureTemplate.cloneNode(true);
+const pictureFragments = document.createDocumentFragment();
+const picturesTemplate = document.querySelector('#picture')
+  .content
+  .querySelector('a');
 
-  pictureElement.querySelector('.picture__img').src = picture.url;
-  pictureElement.querySelector('.picture__img').alt = picture.description;
+const createPicture = (picture) => {
+  const currentPicture = picturesTemplate.cloneNode(true);
+  currentPicture.querySelector('img').src = picture.url;
+  currentPicture.querySelector('img').alt = picture.description;
+  currentPicture.querySelector('.picture__comments').textContent = picture.comments.length;
+  currentPicture.querySelector('.picture__likes').textContent = picture.likes;
 
-  pictureElement.querySelector('.picture__likes').textContent = picture.likes;
-  pictureElement.querySelector('.picture__comments').textContent = picture.comments.length;
-
-  pictureElement.dataset.id = picture.id;
-  pictures.append(pictureElement);
+  const onPictureClick = (evt) => {
+    evt.preventDefault();
+    showBigPicture(picture);
+  };
+  currentPicture.dataset.id = picture.id;
+  currentPicture.addEventListener('click', onPictureClick);
+  pictureFragments.append(currentPicture);
 };
 
-const renderPhotos = (photos) => {
-  const fragment = document.createDocumentFragment();
+const createPictures = (pictures) => {
 
-  photos.forEach((picture) => {
-    const pictureElement = renderPhoto(picture);
-    fragment.appendChild(pictureElement);
+  const pictureContainer = document.querySelector('.pictures');
+
+  pictures.forEach((picture) => {
+    createPicture(picture);
   });
 
-  pictures.appendChild(fragment);
+  pictureContainer.append(pictureFragments);
+
 };
 
-export {renderPhotos};
+export {createPictures};

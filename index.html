@@ -7,9 +7,6 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <title>Кекстаграм</title>
-  <script src="js/functions.js"></script>
-  <script src="js/main.js" type = "module"></script>
-  <script src="pictures.js"></script>
 </head>
 
 <body>
@@ -122,7 +119,7 @@
                     <input class="text__hashtags" name="hashtags" placeholder="#ХэшТег">
                   </div>
                   <div class="img-upload__field-wrapper">
-                    <textarea class="text__description" name="description" placeholder="Ваш комментарий..."></textarea>
+                    <textarea class="text__description" name="description" placeholder="Ваш комментарий..." maxlength="140"></textarea>
                   </div>
                 </fieldset>
 
@@ -165,7 +162,7 @@
             </li>
             <li class="social__comment">
               <img class="social__picture" src="img/avatar-3.svg" alt="Аватар комментатора фотографии" width="35" height="35">
-               <p class="social__text">Да это фоташоп!!!!!!!!</p>
+              <p class="social__text">Да это фоташоп!!!!!!!!</p>
             </li>
           </ul>
 
@@ -237,10 +234,14 @@
 
   <template id = "comments">
     <li class="social__comment">
-      <img class="social__picture" width="35" height="35">
+      <img
+          class="social__picture" width="35" height="35">
       <p class="social__text"></p>
-    </li>
+  </li>
   </template>
+
+  <script src="js/main.js" type="module"></script>
+  <script src="pristine/pristine-min.js"></script>
 
 </body>
 </html>
