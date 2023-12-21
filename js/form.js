@@ -1,4 +1,6 @@
 import { isEscKey } from './utils.js';
+import {pristine} from './hashtag-pristine.js';
+import {initRadios, resetFilters } from './effects.js';
 
 const body = document.querySelector('body');
 const formUpload = document.querySelector('.img-upload__form');
@@ -9,6 +11,55 @@ const closeButton = document.querySelector('#upload-cancel');
 const effects = document.querySelectorAll('.effects__preview');
 const mainPicture = document.querySelector('.img-upload__preview img');
 
+const plusButton = document.querySelector('.scale__control--bigger');
+const minusButton = document.querySelector('.scale__control--smaller');
+const scaleControl = document.querySelector('.scale__control--value');
+const imagePreview = document.querySelector('.img-upload__preview img');
+
+const Zoom = {
+  STEP: 25,
+  MIN: 25,
+  MAX: 100,
+};
+
+const initForm = () => {
+  closeButton.addEventListener('click', onCloseFormClick);
+  document.addEventListener('keydown', onCloseFormEscDown);
+
+  fileUpload.addEventListener('change', onFileUploadChange);
+  scaleControl.value = '100%';
+};
+
+const changeZoom = (factor = 1) => {
+  let size = parseInt(scaleControl.value, 10) + (Zoom.STEP * factor);
+
+  if(size < Zoom.MIN){
+    size = Zoom.MIN;
+    return;
+  }
+  if(size > Zoom.MAX){
+    size = Zoom.MAX;
+    return;
+  }
+
+  scaleControl.value = `${size}%`;
+  imagePreview.style.transform = `scale(${size / 100})`;
+};
+
+const initButtons = () => {
+
+  const onMinusButtonClick = () => {
+    changeZoom(-1);
+  };
+
+  const onPlusButtonClick = () => {
+    changeZoom(1);
+  };
+
+  minusButton.addEventListener('click', onMinusButtonClick);
+  plusButton.addEventListener('click', onPlusButtonClick);
+};
+
 const closeForm =  () => {
   uploadOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
@@ -18,6 +69,13 @@ const closeForm =  () => {
 
   formUpload.reset();
 };
+
+pristine.reset();
+
+scaleControl.value = '100%';
+imagePreview.style.transform = 'scale(100%)';
+
+resetFilters();
 
 function onCloseFormClick (evt) {
   evt.preventDefault();
@@ -46,15 +104,14 @@ const changeImages = () => {
 };
 
 
-const onFileUploadChange = () => {
+function onFileUploadChange () {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
 
+  initForm();
   changeImages();
+  initButtons();
+  initRadios();
+}
 
-  closeButton.addEventListener('click', onCloseFormClick);
-  document.addEventListener('keydown', onCloseFormEscDown);
-
-};
-
-fileUpload.addEventListener('change', onFileUploadChange);
+export {initForm};
