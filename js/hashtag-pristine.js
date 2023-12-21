@@ -85,3 +85,5 @@ formUpload.addEventListener('submit', (evt) => {
   onHashtagInput(evt);
   pristine.validate();
 });
+
+export {pristine};
