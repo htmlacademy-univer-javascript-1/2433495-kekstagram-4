@@ -5,6 +5,7 @@ import {initEffects} from './effects.js';
 import { loadData } from './api.js';
 import { ALERT_SHOW_TIME } from './consts.js';
 import { showAlert } from './util.js';
+import './filters.js';
 import './messages.js';
 
 initEffects();
