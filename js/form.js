@@ -1,117 +1,108 @@
-import { isEscKey } from './utils.js';
-import {pristine} from './hashtag-pristine.js';
-import {initRadios, resetFilters } from './effects.js';
-
-const body = document.querySelector('body');
-const formUpload = document.querySelector('.img-upload__form');
-const fileUpload = document.querySelector('#upload-file');
-const uploadOverlay = document.querySelector('.img-upload__overlay');
-const closeButton = document.querySelector('#upload-cancel');
-
-const effects = document.querySelectorAll('.effects__preview');
-const mainPicture = document.querySelector('.img-upload__preview img');
-
-const plusButton = document.querySelector('.scale__control--bigger');
-const minusButton = document.querySelector('.scale__control--smaller');
-const scaleControl = document.querySelector('.scale__control--value');
-const imagePreview = document.querySelector('.img-upload__preview img');
+import { onFilterButtonChange, effectList, sliderWrapper } from './effects.js';
+import { isEscapeKey } from './util.js';
+import { buttonAdjustment } from './hashtags-pristine.js';
 
 const Zoom = {
-  STEP: 25,
   MIN: 25,
   MAX: 100,
+  STEP: 25,
 };
 
-const initForm = () => {
-  closeButton.addEventListener('click', onCloseFormClick);
-  document.addEventListener('keydown', onCloseFormEscDown);
+const body = document.querySelector('body');
+const formUpload = body.querySelector('.img-upload__form');
+const overlay = body.querySelector('.img-upload__overlay');
+const fileUpload = body.querySelector('#upload-file');
+const formUploadClose = body.querySelector('#upload-cancel');
+const minusButton = body.querySelector('.scale__control--smaller');
+const plusButton = body.querySelector('.scale__control--bigger');
+const scaleControlValue = body.querySelector('.scale__control--value');
+const imagePreview = body.querySelector('.img-upload__preview img');
+const commentsField = formUpload.querySelector('.text__description');
 
-  fileUpload.addEventListener('change', onFileUploadChange);
-  scaleControl.value = '100%';
-};
 
-const changeZoom = (factor = 1) => {
-  let size = parseInt(scaleControl.value, 10) + (Zoom.STEP * factor);
-
-  if(size < Zoom.MIN){
-    size = Zoom.MIN;
-    return;
-  }
-  if(size > Zoom.MAX){
-    size = Zoom.MAX;
-    return;
-  }
-
-  scaleControl.value = `${size}%`;
-  imagePreview.style.transform = `scale(${size / 100})`;
-};
-
-const initButtons = () => {
-
-  const onMinusButtonClick = () => {
-    changeZoom(-1);
-  };
-
-  const onPlusButtonClick = () => {
-    changeZoom(1);
-  };
-
-  minusButton.addEventListener('click', onMinusButtonClick);
-  plusButton.addEventListener('click', onPlusButtonClick);
-};
-
-const closeForm =  () => {
-  uploadOverlay.classList.add('hidden');
+const closeForm = () => {
+  overlay.classList.add('hidden');
   body.classList.remove('modal-open');
+  effectList.removeEventListener('change', onFilterButtonChange);
 
-  closeButton.removeEventListener('click', onCloseFormClick);
-  document.removeEventListener('keydown', onCloseFormEscDown);
+  imagePreview.style.transform = '';
+  imagePreview.className = 'img-upload__preview';
+  imagePreview.style.filter = '';
 
   formUpload.reset();
 };
 
-pristine.reset();
-
-scaleControl.value = '100%';
-imagePreview.style.transform = 'scale(100%)';
-
-resetFilters();
-
-function onCloseFormClick (evt) {
-  evt.preventDefault();
-  closeForm();
-}
-
-function onCloseFormEscDown (evt) {
-  if(isEscKey(evt) &&
-  !evt.target.classList.contains('text__hashtag') &&
-  !evt.target.classList.contains('text__description'))
-  {
+const onCloseFormEscKeyDown = (evt) => {
+  if (isEscapeKey(evt) &&
+      !evt.target.classList.contains('text__hashtags') &&
+      !evt.target.classList.contains('text__description')
+  ) {
     evt.preventDefault();
     closeForm();
+
+    document.removeEventListener('keydown', onCloseFormEscKeyDown);
   }
-}
+};
+
+const addFieldListener = (field) => {
+  field.addEventListener('focus', () => {
+    document.removeEventListener('keydown', onCloseFormEscKeyDown);
+  });
+  field.addEventListener('blur', () => {
+    document.addEventListener('keydown', onCloseFormEscKeyDown);
+  });
+};
 
 const changeImages = () => {
   const file = fileUpload.files[0];
   const fileUrl = URL.createObjectURL(file);
 
-  mainPicture.src = fileUrl;
-
-  effects.forEach((effect) => {
-    effect.style.backgroundImage = `url('${fileUrl}')`;
-  });
+  imagePreview.src = fileUrl;
 };
 
-
-function onFileUploadChange () {
-  uploadOverlay.classList.remove('hidden');
+const onFileUploadChange = () => {
+  overlay.classList.remove('hidden');
   body.classList.add('modal-open');
 
-  initForm();
   changeImages();
-  initButtons();
-  initRadios();
-}
 
-export {initForm};
+  document.addEventListener('keydown', onCloseFormEscKeyDown);
+  sliderWrapper.classList.add('hidden');
+  effectList.addEventListener('change', onFilterButtonChange);
+  addFieldListener(commentsField);
+  buttonAdjustment();
+};
+
+fileUpload.addEventListener('change', onFileUploadChange);
+
+formUploadClose.addEventListener('click', () => {
+  closeForm();
+});
+
+const changeZoom = (factor = 1) => {
+  let size = parseInt(scaleControlValue.value, 10) + (Zoom.STEP * factor);
+
+  if (size < Zoom.MIN) {
+    size = Zoom.MIN;
+  }
+
+  if (size > Zoom.MAX) {
+    size = Zoom.MAX;
+  }
+
+  scaleControlValue.value = `${size}%`;
+  imagePreview.style.transform = `scale(${size / 100})`;
+};
+
+const onMinusButtonClick = () => {
+  changeZoom(-1);
+};
+
+const onPlusButtonClick = () => {
+  changeZoom();
+};
+
+minusButton.addEventListener('click', onMinusButtonClick);
+plusButton.addEventListener('click', onPlusButtonClick);
+
+export {closeForm, formUpload, imagePreview};
