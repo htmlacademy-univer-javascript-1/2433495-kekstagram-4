@@ -1,11 +1,26 @@
-import './data.js';
-import {PHOTOS_COUNT, createImage } from './data.js';
-import {createPictures} from './pictures.js';
-import './big-picture.js';
-import {initForm} from './form.js';
-import './hashtag-pristine.js';
+import {renderPictures} from './pictures.js';
+import './form.js';
+import './hashtags-pristine.js';
+import {initEffects} from './effects.js';
+import { loadData } from './api.js';
+import { ALERT_SHOW_TIME } from './consts.js';
+import { showAlert } from './util.js';
+import './messages.js';
 
-const pictures = Array.from( {length: PHOTOS_COUNT}, createImage);
+initEffects();
 
-createPictures(pictures);
-initForm();
+let photos = [];
+
+const onSuccess = (data) => {
+  photos = data.slice();
+  renderPictures(photos);
+  document.querySelector('.img-filters').classList.remove('img-filters--inactive');
+};
+
+const onError = () => {
+  showAlert('Не удалось загрузить фотографии, обновите страницу', ALERT_SHOW_TIME);
+};
+
+loadData(onSuccess, onError);
+
+export {photos};

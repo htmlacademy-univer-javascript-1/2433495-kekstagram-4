@@ -1,36 +1,36 @@
-import {showBigPicture} from './big-picture.js';
+import { showBigPicture } from './big-picture.js';
 
-const pictureFragments = document.createDocumentFragment();
-const picturesTemplate = document.querySelector('#picture')
-  .content
-  .querySelector('a');
+const pictures = document.querySelector('.pictures');
+const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
-const createPicture = (picture) => {
-  const currentPicture = picturesTemplate.cloneNode(true);
-  currentPicture.querySelector('img').src = picture.url;
-  currentPicture.querySelector('img').alt = picture.description;
-  currentPicture.querySelector('.picture__comments').textContent = picture.comments.length;
-  currentPicture.querySelector('.picture__likes').textContent = picture.likes;
+const renderPicture = (photo) => {
+  const {url, description, comments, likes} = photo;
+  const pictureElement = pictureTemplate.cloneNode(true);
 
-  const onPictureClick = (evt) => {
+  pictureElement.querySelector('.picture__img').src = url;
+  pictureElement.querySelector('.picture__img').alt = description;
+  pictureElement.querySelector('.picture__comments').textContent = comments.length;
+  pictureElement.querySelector('.picture__likes').textContent = likes;
+
+  const onPictureElementClick = (evt) => {
     evt.preventDefault();
-    showBigPicture(picture);
+
+    showBigPicture(photo);
   };
-  currentPicture.dataset.id = picture.id;
-  currentPicture.addEventListener('click', onPictureClick);
-  pictureFragments.append(currentPicture);
+
+  pictureElement.addEventListener('click', onPictureElementClick);
+
+  return pictureElement;
 };
 
-const createPictures = (pictures) => {
+const fragment = document.createDocumentFragment();
 
-  const pictureContainer = document.querySelector('.pictures');
-
-  pictures.forEach((picture) => {
-    createPicture(picture);
+const renderPictures = (photos) => {
+  photos.forEach((photo) => {
+    fragment.appendChild(renderPicture(photo));
   });
 
-  pictureContainer.append(pictureFragments);
-
+  pictures.appendChild(fragment);
 };
 
-export {createPictures};
+export {renderPictures};

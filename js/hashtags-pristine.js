@@ -1,8 +1,9 @@
-const MAX_SYMBOLS = 20;
-const MAX_HASHTAGS = 5;
+import { MAX_HASHTAGS, MAX_SYMBOLS, MAX_STRING_LENGTH } from './consts.js';
+import { checkLenght } from './util.js';
 
 const formUpload = document.querySelector('.img-upload__form');
-const submitBtn = document.querySelector('#upload-submit');
+const submitButton = document.querySelector('.img-upload__submit');
+const commentsField = formUpload.querySelector('.text__description');
 
 const pristine = new Pristine(formUpload, {
   classTo: 'img-upload__field-wrapper',
@@ -11,24 +12,28 @@ const pristine = new Pristine(formUpload, {
   errorTextClass: 'img-upload__error'
 }, true);
 
+const buttonAdjustment = () => {
+  submitButton.disabled = !pristine.validate();
+};
 
 const inputHashtag = document.querySelector('.text__hashtags');
 
 let errorMessage = '';
 
-const error =  () => errorMessage;
+const error = () => errorMessage;
 
-const hashtagHandler = (value) =>{
+const hashtagsHandler = (value) => {
   errorMessage = '';
 
   const inputText = value.toLowerCase().trim();
 
-  if(!inputText) {
+  if (!inputText) {
     return true;
   }
 
   const inputArray = inputText.split(/\s+/);
-  if(inputArray.length === 0){
+
+  if (inputArray.length === 0) {
     return true;
   }
 
@@ -39,7 +44,7 @@ const hashtagHandler = (value) =>{
     },
     {
       check: inputArray.some((item) => item[0] !== '#'),
-      error: 'Хэш-тег должен начинаться с #',
+      error: 'Хэш-тег должен начинаться с символа #',
     },
     {
       check: inputArray.some((item, num, arr) => arr.includes(item, num + 1)),
@@ -54,36 +59,54 @@ const hashtagHandler = (value) =>{
       error: `Нельзя указать больше ${MAX_HASHTAGS} хэш-тегов`,
     },
     {
-      check: inputArray.some((item) => !/^#[a-zа-яё0-9]{1,19}$/i.test(item)),
+      check: inputArray.some((item) => !/^#[A-Za-zА-Яа-яЁё0-9]{0,19}$/.test(item)),
       error: 'Хэш-тег содержит недопустимые символы',
     },
   ];
+
   return rules.every((rule) => {
     const isInvalid = rule.check;
-    if(isInvalid){
+    if (isInvalid) {
       errorMessage = rule.error;
     }
     return !isInvalid;
   });
 };
 
-const onHashtagInput = (item) =>{
-  if(item.validate){
-    submitBtn.disabled = true;
+const commentHandler = (string) => {
+  errorMessage = '';
+
+  const inputText = string.trim();
+
+  if(!inputText) {
+    return true;
   }
-  else{
-    submitBtn.disabled = false;
+
+  const rule = {
+    check: !checkLenght(inputText, MAX_STRING_LENGTH),
+    error: `Максимальная длина комментария ${MAX_STRING_LENGTH} символов`,
+  };
+
+  const isInvalid = rule.check;
+  if(isInvalid) {
+    errorMessage = rule.error;
   }
+  return !isInvalid;
 };
 
+pristine.addValidator(inputHashtag, hashtagsHandler, error, 2, false);
+pristine.addValidator(commentsField, commentHandler, error, 2, false);
 
-pristine.addValidator(inputHashtag, hashtagHandler, error, 2, false);
+const onHashtagInput = () => buttonAdjustment();
+const onCommentInput = () => buttonAdjustment();
 
 inputHashtag.addEventListener('input', onHashtagInput);
+commentsField.addEventListener('input', onCommentInput);
+
 formUpload.addEventListener('submit', (evt) => {
   evt.preventDefault();
-  onHashtagInput(evt);
+
   pristine.validate();
 });
 
-export {pristine};
+export {inputHashtag, buttonAdjustment};
