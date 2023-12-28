@@ -1,10 +1,10 @@
 import { imagePreview } from './form.js';
 
-const slider = document.querySelector('.effect-level__slider');
-const sliderWrapper = document.querySelector('.effect-level');
-const effectValue = document.querySelector('.effect-level__value');
-const effectList = document.querySelector('.effects__list');
-
+const uploadingOverlay = document.querySelector('.img-upload__overlay');
+const slider = uploadingOverlay.querySelector('.effect-level__slider');
+const sliderWrapper = uploadingOverlay.querySelector('.effect-level');
+const effectValue = uploadingOverlay.querySelector('.effect-level__value');
+const effectList = uploadingOverlay.querySelector('.effects__list');
 
 const Effects = {
   none: {

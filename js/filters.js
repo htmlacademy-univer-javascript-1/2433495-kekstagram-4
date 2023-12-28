@@ -1,8 +1,8 @@
 import { debounce, shuffleArray } from './util.js';
 import { renderPictures, removePictures } from './pictures.js';
 import { photos } from './main.js';
+import { COUNT_OF_FILTER } from './consts.js';
 
-const COUNT_OF_FILTER = 10;
 const ACTIVE_CLASS = 'img-filters__button--active';
 const imgFilters = document.querySelector('.img-filters');
 const imgFiltersForm = imgFilters.querySelector('.img-filters__form');
