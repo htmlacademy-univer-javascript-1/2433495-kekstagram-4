@@ -25,7 +25,8 @@ const closeForm = () => {
   body.classList.remove('modal-open');
   effectList.removeEventListener('change', onFilterButtonChange);
 
-  imagePreview.style.transform = '';
+  scaleControlValue.value = '100%';
+  imagePreview.style.transform = 'scale(100%)';
   imagePreview.className = 'img-upload__preview';
   imagePreview.style.filter = '';
 
@@ -60,11 +61,28 @@ const changeImages = () => {
   imagePreview.src = fileUrl;
 };
 
+
+const changeZoom = (factor = 1) => {
+  let size = Zoom.MAX;
+
+  if (factor === -1) {
+    size -= Zoom.STEP;
+  } else if (factor === 1) {
+    size = Zoom.MAX;
+  }
+
+  scaleControlValue.value = `${size}%`;
+  imagePreview.style.transform = `scale(${size / 100})`;
+};
+
+
 const onFileUploadChange = () => {
   overlay.classList.remove('hidden');
   body.classList.add('modal-open');
 
   changeImages();
+
+  changeZoom();
 
   document.addEventListener('keydown', onCloseFormEscKeyDown);
   sliderWrapper.classList.add('hidden');
@@ -78,21 +96,6 @@ fileUpload.addEventListener('change', onFileUploadChange);
 formUploadClose.addEventListener('click', () => {
   closeForm();
 });
-
-const changeZoom = (factor = 1) => {
-  let size = parseInt(scaleControlValue.value, 10) + (Zoom.STEP * factor);
-
-  if (size < Zoom.MIN) {
-    size = Zoom.MIN;
-  }
-
-  if (size > Zoom.MAX) {
-    size = Zoom.MAX;
-  }
-
-  scaleControlValue.value = `${size}%`;
-  imagePreview.style.transform = `scale(${size / 100})`;
-};
 
 const onMinusButtonClick = () => {
   changeZoom(-1);
